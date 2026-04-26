@@ -2,10 +2,13 @@ import pandas as pd
 import numpy as np
 
 # Carregar dataset original sem modificá-lo
-PATH = "../carne-brasileira-exportada.csv"
+PATH = "carne-brasileira-exportada.csv"
 df = pd.read_csv(PATH)
 
-df["date"] = pd.to_datetime(df["ano"].astype(str) + "Q" + df["trimestre"].astype(str))
+df["date"] = pd.PeriodIndex(
+    df["ano"].astype(str) + "Q" + df["trimestre"].astype(str),
+    freq="Q"
+).to_timestamp()
 df = df.sort_values(["tipo_carne", "date"]).reset_index(drop=True)
 
 # Criar cópia com features derivadas
@@ -34,8 +37,9 @@ def add_derived_features(group):
 
 df_derived = df.groupby("tipo_carne", group_keys=False).apply(add_derived_features).reset_index(drop=True)
 
-# Salvar a cópia derivada
+# Remover linhas com qualquer valor nulo antes de salvar
 OUTPUT_PATH = "../carne-brasileira-derivada.csv"
+df_derived = df_derived.dropna()
 df_derived.to_csv(OUTPUT_PATH, index=False)
 
 # Visualizar as primeiras linhas
