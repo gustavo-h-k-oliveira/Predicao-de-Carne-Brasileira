@@ -34,11 +34,16 @@ def add_derived_features(group):
     return group
 
 # Aplicar por tipo de carne para preservar dependências temporais dentro de cada série
-
-df_derived = df.groupby("tipo_carne", group_keys=False).apply(add_derived_features).reset_index(drop=True)
+df_derived = (
+    df.groupby("tipo_carne")
+      .apply(add_derived_features)
+      .reset_index(level=0)
+      .reset_index(drop=True)
+)
+print(df.columns)
 
 # Remover linhas com qualquer valor nulo antes de salvar
-OUTPUT_PATH = "../carne-brasileira-derivada.csv"
+OUTPUT_PATH = "carne-brasileira-derivada.csv"
 df_derived = df_derived.dropna()
 df_derived.to_csv(OUTPUT_PATH, index=False)
 
