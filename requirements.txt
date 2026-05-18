@@ -2,6 +2,7 @@ pandas
 numpy
 scikit-learn
 xgboost
+statsmodels
 matplotlib
 tensorflow
 keras-tuner
